@@ -1,0 +1,94 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "b5c3ad281512d31dda1ded6982b88bf8",
+    "entities": [
+      {
+        "tableName": "art_objects",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`object_number` TEXT, `title` TEXT, `first_maker` TEXT, `iden` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `guid` TEXT, `url` TEXT NOT NULL, `width` INTEGER, `height` INTEGER, `offsetPercentageX` INTEGER, `offsetPercentageY` INTEGER, `id` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "objectNumber",
+            "columnName": "object_number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "principalOrFirstMaker",
+            "columnName": "first_maker",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "iden",
+            "columnName": "iden",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mWebImage.guid",
+            "columnName": "guid",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mWebImage.url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mWebImage.width",
+            "columnName": "width",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mWebImage.height",
+            "columnName": "height",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mWebImage.offsetPercentageX",
+            "columnName": "offsetPercentageX",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mWebImage.offsetPercentageY",
+            "columnName": "offsetPercentageY",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mWebImage.id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "iden"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b5c3ad281512d31dda1ded6982b88bf8')"
+    ]
+  }
+}
