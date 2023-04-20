@@ -5,17 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rijksmuseumapp.R
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ArtObjectFragment: Fragment(), ArtObjectAdapter.OnArtObjectClickListener {
+class ArtObjectFragment : Fragment(), ArtObjectAdapter.OnArtObjectClickListener {
 
     private val mainViewModel: ArtObjectViewModel by viewModels()
 
@@ -55,21 +59,25 @@ class ArtObjectFragment: Fragment(), ArtObjectAdapter.OnArtObjectClickListener {
                         && totalItemCount >= pageSize
                     ) {
                         currentPage++
-                        mainViewModel.fetchDataFromRepository { artObjects ->
+                        mainViewModel.fetchDataFromRepository({ artObjects ->
                             adapter.addData(artObjects)
-                        }
+                        }, { errorMessage ->
+                            onError(errorMessage)
+                        })
                     }
                 }
             }
         })
 
         progressBar.visibility = View.VISIBLE
-        mainViewModel.fetchDataFromRepository { artObjects ->
+        mainViewModel.fetchDataFromRepository({ artObjects ->
             adapter.addData(artObjects)
             activity?.runOnUiThread {
                 progressBar.visibility = View.GONE // Hide progress bar after data is loaded
             }
-        }
+        }, { errorMessage ->
+            onError(errorMessage)
+        })
 
         return view
     }
@@ -77,12 +85,14 @@ class ArtObjectFragment: Fragment(), ArtObjectAdapter.OnArtObjectClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progressBar.visibility = View.VISIBLE
-        mainViewModel.fetchDataFromRepository { artObjects ->
+        mainViewModel.fetchDataFromRepository({ artObjects ->
             adapter.addData(artObjects)
             activity?.runOnUiThread {
                 progressBar.visibility = View.GONE // Hide progress bar after data is loaded
             }
-        }
+        }, { errorMessage ->
+            onError(errorMessage)
+        })
     }
 
     override fun onArtObjectClicked(artObjectId: String) {
@@ -90,5 +100,13 @@ class ArtObjectFragment: Fragment(), ArtObjectAdapter.OnArtObjectClickListener {
             R.id.action_mainFragment_to_artDetailsFragment,
             bundleOf("artObjectId" to artObjectId)
         )
+    }
+
+    fun onError(e: Throwable) {
+        val message = e.message ?: "An unknown error occurred"
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+            Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show()
+            progressBar.visibility = View.GONE
+        }
     }
 }

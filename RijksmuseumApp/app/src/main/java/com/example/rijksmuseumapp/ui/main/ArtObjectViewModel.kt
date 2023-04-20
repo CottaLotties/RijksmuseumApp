@@ -18,17 +18,21 @@ class ArtObjectViewModel @Inject constructor(private val artObjectRepository: Ar
     private var isLoading = false
     private var isLastPage = false
 
-    fun fetchDataFromRepository(onDataFetched: (List<ArtObject>) -> Unit) {
+    fun fetchDataFromRepository(onDataFetched: (List<ArtObject>) -> Unit, onError: (Throwable) -> Unit) {
         if (isLoading || isLastPage) return
 
         isLoading = true
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val artObjects = artObjectRepository.getArtObjects(currentPage, pageSize)
-                if (artObjects.isEmpty()) {
-                    isLastPage = true
-                } else {
-                    onDataFetched(artObjects)
+                try {
+                    val artObjects = artObjectRepository.getArtObjects(currentPage, pageSize)
+                    if (artObjects.isEmpty()) {
+                        isLastPage = true
+                    } else {
+                        onDataFetched(artObjects)
+                    }
+                } catch (e: Exception) {
+                    onError(e)
                 }
             }
             isLoading = false
